@@ -1,0 +1,394 @@
+@import 'tailwindcss';
+
+/* Industry design system — same tokens as the reception kiosk
+   (../reception/src/index.css), so the two read as one product. */
+:root {
+  --color-bg: #f2f2f3;
+  --color-surface: #e9e9ea;
+  --color-text: #1d1f20;
+  --color-accent: #5980a6;
+  --color-divider: color-mix(in srgb, #1d1f20 16%, transparent);
+
+  --color-neutral-500: #98989b;
+  --color-neutral-700: #5d5d60;
+  --color-neutral-800: #424244;
+
+  --color-accent-100: #eef6ff;
+  --color-accent-700: #416180;
+  --color-accent-800: #2c455d;
+
+  --font-heading: 'Barlow Condensed', system-ui, sans-serif;
+  --font-body: 'Barlow', system-ui, sans-serif;
+
+  /* Chart marks. The brand accent is too gray to carry data (it fails the
+     chroma floor), so marks use a stronger step of the same blue. Both pass
+     the dataviz palette validator against --color-bg. Red means escalated
+     everywhere it appears and nothing else. */
+  --viz-visits: #3b7dc0;
+  --viz-escalated: #d03b3b;
+  --viz-grid: color-mix(in srgb, #1d1f20 9%, transparent);
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+
+  :focus {
+    outline: none;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--color-accent) 30%, transparent);
+  }
+  a {
+    color: inherit;
+    text-decoration-color: var(--color-divider);
+    text-underline-offset: 3px;
+  }
+  a:hover {
+    text-decoration-color: currentColor;
+  }
+}
+
+@layer components {
+  /* — blueprint frame: square, transparent, hairline, registration marks — */
+  .blueprint {
+    position: relative;
+    border: 1px solid var(--color-divider);
+    border-radius: 0;
+  }
+  .blueprint > .corner {
+    position: absolute;
+    width: 11px;
+    height: 11px;
+    color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  }
+  .blueprint > .corner::before,
+  .blueprint > .corner::after {
+    content: '';
+    position: absolute;
+    background: currentColor;
+  }
+  .blueprint > .corner::before {
+    left: 5px;
+    top: 0;
+    width: 1px;
+    height: 100%;
+  }
+  .blueprint > .corner::after {
+    top: 5px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+  }
+  .corner.tl { top: -6px; left: -6px; }
+  .corner.tr { top: -6px; right: -6px; }
+  .corner.bl { bottom: -6px; left: -6px; }
+  .corner.br { bottom: -6px; right: -6px; }
+
+  /* — buttons — */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 52px;
+    padding: 0 30px;
+    cursor: pointer;
+    border: 1px solid var(--color-divider);
+    border-radius: 0;
+    background: transparent;
+    color: var(--color-text);
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 19px;
+    line-height: 1.2;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  /* the kiosk sizes are for fingers on a tablet; this is the desk size */
+  .btn-sm {
+    min-height: 36px;
+    padding: 0 14px;
+    font-size: 15px;
+  }
+  .btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  .btn:hover:not(:disabled) { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+  .btn-primary,
+  .btn[aria-pressed='true'] {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-bg);
+  }
+  .btn-primary:hover:not(:disabled),
+  .btn[aria-pressed='true']:hover:not(:disabled) { background: #597ea3; }
+  .btn-primary:active:not(:disabled) { background: var(--color-accent-700); }
+  .btn-ghost {
+    border-color: transparent;
+    color: var(--color-accent-700);
+  }
+
+  /* — forms — */
+  .input {
+    width: 100%;
+    min-height: 52px;
+    padding: 10px 14px;
+    font: inherit;
+    font-size: 17px;
+    color: var(--color-text);
+    caret-color: var(--color-accent);
+    background: var(--color-surface);
+    border: 1px solid var(--color-divider);
+    border-radius: 0;
+  }
+  .input-sm {
+    width: auto;
+    min-height: 36px;
+    padding: 4px 10px;
+    font-size: 15px;
+  }
+  .input:hover { border-color: color-mix(in srgb, var(--color-text) 45%, transparent); }
+  .input:focus-visible { border-color: var(--color-accent); outline-offset: 0; }
+
+  .dr-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-neutral-700);
+  }
+  .dr-step {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-accent-700);
+  }
+  .dr-head {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: clamp(30px, 4vw, 40px);
+    line-height: 1.04;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+  }
+  .rp-h2 {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 1.2;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .rp-muted { color: var(--color-neutral-700); }
+
+  /* — column chart — */
+  .cols {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+  }
+  /* The whole band is the hover target, not just the painted bar. */
+  .col {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-inline: 1px; /* 2px of surface between neighbours */
+  }
+  .col-value {
+    font-size: 11px;
+    line-height: 16px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-neutral-800);
+  }
+  .col-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+    max-width: 24px;
+    min-height: 2px;
+  }
+  .col-seg { background: var(--viz-visits); }
+  .col-seg.escalated { background: var(--viz-escalated); }
+  .col-seg:first-child { border-radius: 4px 4px 0 0; }
+  .col:hover { background: color-mix(in srgb, var(--color-text) 5%, transparent); }
+  .col:hover .col-seg { filter: brightness(1.12); }
+
+  .tip {
+    display: none;
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    translate: -50% 0;
+    padding: 6px 10px;
+    white-space: nowrap;
+    pointer-events: none;
+    background: var(--color-text);
+    color: var(--color-bg);
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .tip strong { font-size: 14px; }
+  /* near an edge the tooltip hangs inward so it cannot leave the card */
+  .col.at-start .tip { left: 0; translate: none; }
+  .col.at-end .tip { left: auto; right: 0; translate: none; }
+  .col:hover .tip { display: block; }
+
+  .gridline {
+    position: absolute;
+    inset-inline: 0;
+    height: 1px;
+    background: var(--viz-grid);
+  }
+  .tick {
+    position: absolute;
+    right: 0;
+    translate: 0 50%;
+    font-size: 11px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-neutral-700);
+  }
+
+  .swatch {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 6px;
+    background: var(--viz-visits);
+  }
+  .swatch.escalated { background: var(--viz-escalated); }
+
+  /* — horizontal bars: label, bar, value. Every value is printed, so this is
+       its own table view. — */
+  .bars {
+    display: grid;
+    /* the label never takes more than half a narrow card */
+    grid-template-columns: minmax(0, min(45%, 15rem)) minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 9px 12px;
+    margin: 0;
+  }
+  .bars dt {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 14px;
+  }
+  .bars dt small {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 12px;
+    color: var(--color-neutral-700);
+  }
+  .bars dd { margin: 0; }
+  .bar {
+    display: block;
+    height: 10px;
+    min-width: 2px;
+    border-radius: 0 4px 4px 0;
+    background: var(--viz-visits);
+  }
+  .bar.escalated { background: var(--viz-escalated); }
+  .bar-value {
+    font-size: 14px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .bar-value small {
+    margin-left: 6px;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--color-neutral-700);
+  }
+
+  /* — tables — */
+  .tbl {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  .tbl th {
+    padding: 0 12px 8px 0;
+    text-align: left;
+    white-space: nowrap;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-neutral-700);
+    border-bottom: 1px solid var(--color-divider);
+  }
+  .tbl td {
+    padding: 9px 12px 9px 0;
+    vertical-align: top;
+    border-bottom: 1px solid var(--viz-grid);
+  }
+  .tbl tbody tr:hover { background: color-mix(in srgb, var(--color-text) 4%, transparent); }
+  .tbl .num {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .tbl small {
+    display: block;
+    font-size: 13px;
+    color: var(--color-neutral-700);
+  }
+
+  /* status never rides on colour alone: marker plus the word */
+  .flag {
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .flag::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 6px;
+    background: var(--viz-escalated);
+  }
+
+  details > summary {
+    cursor: pointer;
+    width: fit-content;
+    font-size: 13px;
+    color: var(--color-neutral-700);
+  }
+}
